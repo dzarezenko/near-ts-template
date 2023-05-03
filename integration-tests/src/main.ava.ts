@@ -1,4 +1,4 @@
-import { Worker, NearAccount } from 'near-workspaces';
+import { Worker, NearAccount, NEAR } from 'near-workspaces';
 import anyTest, { TestFn } from 'ava';
 
 const test = anyTest as TestFn<{
@@ -35,6 +35,57 @@ test('Returns the default counter value', async (t) => {
   const { contract } = t.context.accounts
   const counter: number = await contract.view('getCounter', {}); // TODO: how to call method as method of some object, but not a literal string value?
 
+  t.is(counter, 0);
+
+});
+
+test("Increase counter", async (t) => {
+
+  const { root, contract } = t.context.accounts;
+
+  await root.call(contract, "increaseCounter", {});
+
+  const counter: number = await contract.view('getCounter', {});
+  t.is(counter, 1);
+
+});
+
+test("Decrease counter", async (t) => {
+
+  const { root, contract } = t.context.accounts;
+
+  await root.call(contract, "increaseCounter", {});
+  await root.call(contract, "decreaseCounter", {});
+
+  const counter: number = await contract.view('getCounter', {});
+  t.is(counter, 0);
+
+});
+
+test("Deposit for set custom counter value", async (t) => {
+
+  const { root, contract } = t.context.accounts;
+  const value: number = 123;
+
+  await root.call(contract, 'setCounter', { value }, { attachedDeposit: NEAR.parse('0.01') });
+
+  const counter: number = await contract.view('getCounter', {});
+  t.is(counter, value);
+
+});
+
+test("Reset counter", async (t) => {
+
+  const { root, contract } = t.context.accounts;
+
+  await root.call(contract, 'setCounter', { value: 42 }, { attachedDeposit: NEAR.parse('0.01') });
+
+  let counter: number = await contract.view('getCounter', {});
+  t.is(counter, 42);
+
+  await contract.call(contract, 'resetCounter', {});
+
+  counter = await contract.view('getCounter', {});
   t.is(counter, 0);
 
 });
