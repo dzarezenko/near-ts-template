@@ -30,4 +30,11 @@ test.afterEach.always(async (t) => {
   });
 });
 
-// TODO: Add functiont test
+test('Returns the default counter value', async (t) => {
+
+  const { contract } = t.context.accounts
+  const counter: number = await contract.view('getCounter', {}); // TODO: how to call method as method of some object, but not a literal string value?
+
+  t.is(counter, 0);
+
+});
