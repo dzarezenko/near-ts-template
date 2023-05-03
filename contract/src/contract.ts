@@ -17,7 +17,7 @@ class Contract {
   }
 
   @call({})
-  dereaseCounter(): void {
+  decreaseCounter(): void {
     if (this.counter == 0) {
       throw new Error("Can't decrease counter");
     }
@@ -32,7 +32,7 @@ class Contract {
   }
 
   @call({ payableFunction: true })
-  setCounter(value: number): void {
+  setCounter({ value }: { value: number }): void {
     if (near.attachedDeposit() < 1e22) {
       throw Error("Deposit amount should be >= 0.01 NEAR");
     }
